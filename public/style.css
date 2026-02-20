@@ -1,0 +1,417 @@
+/* Reset cơ bản */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #0d0d12;
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.game-container {
+    width: 100%;
+    max-width: 600px;
+    background: #1a1a24;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
+    border: 1px solid #2a2a35;
+}
+
+/* Hiệu ứng Neon */
+.neon-text-blue {
+    color: #00ffff;
+    text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff;
+}
+
+.neon-text-purple {
+    color: #b026ff;
+    text-shadow: 0 0 5px #b026ff, 0 0 10px #b026ff;
+}
+
+header h1 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+}
+
+.stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.settings {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    background: #232330;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.settings input {
+    width: 50px;
+    background: #0d0d12;
+    border: 1px solid #b026ff;
+    color: #fff;
+    text-align: center;
+    border-radius: 4px;
+    margin-left: 5px;
+}
+
+.target-letter-container {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.huge-letter {
+    font-size: 6rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 1;
+    margin-top: 10px;
+}
+
+.input-area {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+input[type="text"] {
+    flex: 1;
+    padding: 12px;
+    background: #0d0d12;
+    border: 2px solid #00ffff;
+    color: #fff;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+input[type="text"]:focus {
+    border-color: #b026ff;
+}
+
+button {
+    padding: 10px 20px;
+    background: transparent;
+    border: 2px solid #00ffff;
+    color: #00ffff;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+button:hover:not(:disabled) {
+    background: #00ffff;
+    color: #000;
+}
+
+button:disabled {
+    border-color: #555;
+    color: #555;
+    cursor: not-allowed;
+}
+
+.hint-btn {
+    border-color: #b026ff;
+    color: #b026ff;
+}
+
+.hint-btn:hover:not(:disabled) {
+    background: #b026ff;
+    color: #fff;
+}
+
+.message {
+    text-align: center;
+    height: 20px;
+    color: #ff4d4d;
+    font-weight: bold;
+}
+
+.history-section {
+    margin-top: 2rem;
+    background: #232330;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.history-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.history-item {
+    background: #0d0d12;
+    border: 1px solid #444;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.9rem;
+}
+
+/* Các Nút tính năng mới */
+.action-area {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.random-btn {
+    border-color: #ff9900;
+    color: #ff9900;
+}
+
+.random-btn:hover:not(:disabled) {
+    background: #ff9900;
+    color: #000;
+}
+
+.restart-btn {
+    border-color: #00ffaa;
+    color: #00ffaa;
+    animation: pulse 1.5s infinite;
+}
+
+.restart-btn:hover:not(:disabled) {
+    background: #00ffaa;
+    color: #000;
+    animation: none;
+}
+
+/* Từ do hệ thống tự sinh ra */
+.system-word {
+    border-color: #ff9900 !important;
+    color: #ff9900 !important;
+}
+
+/* Class tiện ích ẩn phần tử */
+.hidden {
+    display: none !important;
+}
+
+/* Animation Rung (Shake) khi nhập sai */
+.shake {
+    animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+    10%, 90% { transform: translate3d(-2px, 0, 0); }
+    20%, 80% { transform: translate3d(4px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+    40%, 60% { transform: translate3d(6px, 0, 0); }
+}
+
+/* Animation Nhấp nháy nút Chơi lại */
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(0, 255, 170, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(0, 255, 170, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(0, 255, 170, 0); }
+}
+
+/* (Giữ nguyên các css cũ của bạn, THÊM các đoạn dưới đây vào cuối file) */
+
+.lobby-area {
+    text-align: center;
+    background: #232330;
+    padding: 2rem;
+    border-radius: 12px;
+}
+
+.lobby-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.primary-btn { border-color: #b026ff; color: #b026ff; }
+.primary-btn:hover { background: #b026ff; color: #fff; }
+
+.secondary-btn { border-color: #00ffff; color: #00ffff; }
+.secondary-btn:hover { background: #00ffff; color: #000; }
+
+.divider {
+    color: #888;
+    margin: 10px 0;
+    font-size: 0.9rem;
+}
+
+#roomCodeInput {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #555;
+    background: #0d0d12;
+    color: #fff;
+    text-align: center;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+}
+
+.room-info {
+    text-align: center;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.players-score {
+    display: flex;
+    justify-content: space-between;
+    background: #0d0d12;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1px solid #444;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.turn-indicator {
+    text-align: center;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    font-size: 1.2rem;
+    background: #333;
+    transition: all 0.3s;
+}
+
+.my-turn { background: #004d40; color: #00ffaa; box-shadow: 0 0 10px rgba(0,255,170,0.3); }
+.opponent-turn { background: #4d0000; color: #ff4d4d; }
+.waiting-turn { background: #4a4a00; color: #ffff00; }
+
+.hidden { display: none !important; }
+
+/* --- CẬP NHẬT GIAO DIỆN LOBBY & CÀI ĐẶT --- */
+.settings-box {
+    background: #1a1a24;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #444;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: left;
+}
+
+.settings-box label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.95rem;
+}
+
+.settings-box input {
+    width: 60px;
+    background: #0d0d12;
+    border: 1px solid #b026ff;
+    color: #fff;
+    text-align: center;
+    border-radius: 4px;
+    padding: 5px;
+}
+
+.join-box { display: flex; gap: 10px; justify-content: center; }
+#roomCodeInput { width: 60%; }
+
+/* --- HEADER PHÒNG CHƠI (Có nút Back) --- */
+.room-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.leave-btn {
+    background: transparent;
+    border: 1px solid #ff4d4d;
+    color: #ff4d4d;
+    padding: 5px 10px;
+    font-size: 0.9rem;
+}
+.leave-btn:hover { background: #ff4d4d; color: #fff; }
+
+.rule-box {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 10px;
+}
+
+/* --- ĐỒNG HỒ --- */
+.timer-box {
+    font-size: 1.5rem;
+    font-weight: 900;
+}
+
+/* --- CẬP NHẬT CSS CHO MULTIPLAYER --- */
+
+.room-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+#startGameBtn {
+    padding: 5px 10px;
+    font-size: 0.9rem;
+}
+
+.timer-container {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+/* Container chứa danh sách người chơi động */
+.players-score-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+/* Thẻ điểm của từng người chơi */
+.player-badge {
+    background: #0d0d12;
+    padding: 8px 15px;
+    border-radius: 8px;
+    border: 1px solid #444;
+    font-weight: bold;
+    font-size: 0.9rem;
+    color: #aaa;
+    transition: all 0.3s;
+}
+
+/* Đổi màu nổi bật cho người đang tới lượt */
+.player-badge.active-turn {
+    border-color: #00ffaa;
+    color: #00ffaa;
+    box-shadow: 0 0 10px rgba(0, 255, 170, 0.4);
+    transform: scale(1.05);
+}
+
+/* Đánh dấu người chơi là chính mình (Tôi) */
+.player-badge.is-me {
+    border-bottom: 3px solid #b026ff;
+}

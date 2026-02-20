@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Chain Multiplayer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <header>
+            <h1 class="neon-text-blue">Word Chain <span class="neon-text-purple">Online</span></h1>
+        </header>
+
+        <section id="lobbyArea" class="lobby-area">
+            <h3>Tạo phòng mới</h3>
+            <div class="settings-box">
+                <label>Số người tối đa: <input type="number" id="setMaxPlayers" value="4" min="2" max="10"></label>
+                <label>Độ dài tối thiểu: <input type="number" id="setMinLength" value="3" min="1"></label>
+                <label>Độ dài tối đa: <input type="number" id="setMaxLength" value="15" min="2"></label>
+                <label>Thời gian (giây): <input type="number" id="setTurnTime" value="15" min="5"></label>
+            </div>
+            <button id="createRoomBtn" class="primary-btn">Tạo phòng ngay</button>
+            
+            <div class="divider">HOẶC VÀO PHÒNG CÓ SẴN</div>
+            
+            <div class="join-box">
+                <input type="text" id="roomCodeInput" placeholder="Nhập mã (VD: 1234)">
+                <button id="joinRoomBtn" class="secondary-btn">Vào phòng</button>
+            </div>
+            <p id="lobbyMessage" class="message"></p>
+        </section>
+
+        <section id="gameArea" class="game-board hidden">
+            <div class="room-header">
+                <button id="leaveRoomBtn" class="leave-btn">⬅ Quay lại</button>
+                <div class="room-info">Phòng: <span id="displayRoomCode" class="neon-text-blue">----</span></div>
+                <button id="startGameBtn" class="primary-btn hidden">Bắt đầu Game</button>
+            </div>
+
+            <div class="rule-box" id="ruleBox">Luật: Từ 3 - 15 ký tự</div>
+
+            <div class="timer-container">
+                <div class="timer-box neon-text-purple" id="timerDisplay">⏳ --s</div>
+            </div>
+
+            <div class="players-score-container" id="playersScoreContainer"></div>
+
+            <div id="turnIndicator" class="turn-indicator">Đang chờ đối thủ...</div>
+
+            <div class="target-letter-container">
+                <p>Chữ cái tiếp theo:</p>
+                <div id="targetLetter" class="huge-letter neon-text-purple">?</div>
+            </div>
+            
+            <div class="input-area">
+                <input type="text" id="wordInput" placeholder="Nhập từ của bạn..." autocomplete="off" disabled>
+                <button id="submitBtn" disabled>Gửi</button>
+            </div>
+            <p id="gameMessage" class="message"></p>
+
+            <section class="history-section">
+                <h3>Lịch sử từ vựng:</h3>
+                <div id="historyList" class="history-list"></div>
+            </section>
+        </section>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
