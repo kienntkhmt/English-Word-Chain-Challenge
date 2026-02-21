@@ -3,6 +3,7 @@ let mySocketId = '';
 
 // DOM Elements
 const lobbyArea = document.getElementById('lobbyArea');
+const playerNameInput = document.getElementById('playerNameInput'); // Nút nhập tên mới
 const createRoomBtn = document.getElementById('createRoomBtn');
 const joinRoomBtn = document.getElementById('joinRoomBtn');
 const roomCodeInput = document.getElementById('roomCodeInput');
@@ -26,29 +27,46 @@ const timerDisplay = document.getElementById('timerDisplay');
 const ruleBox = document.getElementById('ruleBox');
 const leaveRoomBtn = document.getElementById('leaveRoomBtn');
 
+const chatMessages = document.getElementById('chatMessages');
+const chatInput = document.getElementById('chatInput');
+const sendChatBtn = document.getElementById('sendChatBtn');
+
 socket.on('connect', () => { mySocketId = socket.id; });
 
-// --- TẠO VÀ VÀO PHÒNG ---
+// --- TẠO PHÒNG ---
 createRoomBtn.addEventListener('click', () => {
+    const playerName = playerNameInput.value.trim();
+    if (!playerName) {
+        return lobbyMessage.textContent = "Vui lòng nhập tên của bạn trước!";
+    }
+
     const settings = {
         maxPlayers: setMaxPlayers.value,
         minLength: setMinLength.value,
         maxLength: setMaxLength.value,
         turnTime: setTurnTime.value
     };
-    socket.emit('createRoom', settings);
+    
+    // Gửi cả settings và tên người chơi lên Server
+    socket.emit('createRoom', { settings: settings, playerName: playerName });
 });
 
+// --- VÀO PHÒNG ---
 joinRoomBtn.addEventListener('click', () => {
+    const playerName = playerNameInput.value.trim();
+    if (!playerName) {
+        return lobbyMessage.textContent = "Vui lòng nhập tên của bạn trước!";
+    }
+
     const code = roomCodeInput.value.trim();
-    if (code.length === 4) socket.emit('joinRoom', code);
-    else lobbyMessage.textContent = "Mã phòng phải gồm 4 chữ số!";
+    if (code.length === 4) {
+        socket.emit('joinRoom', { roomCode: code, playerName: playerName });
+    } else {
+        lobbyMessage.textContent = "Mã phòng phải gồm 4 chữ số!";
+    }
 });
 
-// Chủ phòng bấm Bắt đầu
-startGameBtn.addEventListener('click', () => {
-    socket.emit('startGame');
-});
+startGameBtn.addEventListener('click', () => { socket.emit('startGame'); });
 
 socket.on('roomCreated', (code) => {
     displayRoomCode.textContent = code;
@@ -63,7 +81,6 @@ leaveRoomBtn.addEventListener('click', () => {
 });
 socket.on('leftRoomSuccess', () => { location.reload(); });
 
-// --- RENDER DỮ LIỆU GAME ĐỘNG TỪ SERVER ---
 socket.on('gameStateUpdate', (room) => {
     lobbyArea.classList.add('hidden');
     gameArea.classList.remove('hidden');
@@ -71,28 +88,23 @@ socket.on('gameStateUpdate', (room) => {
 
     ruleBox.textContent = `Tối đa ${room.settings.maxPlayers} người | Từ ${room.settings.minLength}-${room.settings.maxLength} ký tự | ${room.settings.turnTime}s/lượt`;
 
-    // 1. RENDER DANH SÁCH NGƯỜI CHƠI (SCOREBOARD)
     playersScoreContainer.innerHTML = '';
     room.players.forEach((player, index) => {
         const badge = document.createElement('div');
         badge.className = 'player-badge';
         
-        // Hightlight nếu người này đang tới lượt (và game đã bắt đầu)
         if (room.status === 'playing' && index === room.turnIndex) {
             badge.classList.add('active-turn');
         }
-        // Đánh dấu nếu đây là bản thân mình
         if (player.id === mySocketId) {
             badge.classList.add('is-me');
             badge.textContent = `${player.name} (Bạn): ${player.score}đ`;
         } else {
             badge.textContent = `${player.name}: ${player.score}đ`;
         }
-        
         playersScoreContainer.appendChild(badge);
     });
 
-    // 2. RENDER LỊCH SỬ TỪ
     targetLetterEl.textContent = room.currentTargetLetter ? room.currentTargetLetter.toUpperCase() : "?";
     historyList.innerHTML = '';
     room.historyWords.forEach(word => {
@@ -102,14 +114,11 @@ socket.on('gameStateUpdate', (room) => {
         historyList.appendChild(span);
     });
 
-    // 3. QUẢN LÝ LƯỢT VÀ GIAO DIỆN
     if (room.status === 'waiting') {
-        // NẾU ĐANG CHỜ TRONG LOBBY
         wordInput.disabled = true;
         submitBtn.disabled = true;
         timerDisplay.textContent = "⏳ --s";
 
-        // Chỉ Chủ phòng mới thấy nút Bắt đầu, và phải có >= 2 người
         if (room.hostId === mySocketId) {
             if (room.players.length >= 2) {
                 turnIndicator.textContent = "Đã đủ người, bạn có thể bắt đầu!";
@@ -126,8 +135,7 @@ socket.on('gameStateUpdate', (room) => {
             startGameBtn.classList.add('hidden');
         }
     } else {
-        // NẾU GAME ĐANG CHƠI
-        startGameBtn.classList.add('hidden'); // Ẩn nút Start đi
+        startGameBtn.classList.add('hidden'); 
         const currentPlayerId = room.players[room.turnIndex].id;
         
         if (currentPlayerId === mySocketId) {
@@ -137,7 +145,6 @@ socket.on('gameStateUpdate', (room) => {
             submitBtn.disabled = false;
             wordInput.focus();
         } else {
-            // Tìm tên người đang đánh để hiển thị cho thân thiện
             const currentName = room.players[room.turnIndex].name;
             turnIndicator.textContent = `⏳ Đang đợi ${currentName} nhập từ...`;
             turnIndicator.className = 'turn-indicator opponent-turn';
@@ -190,8 +197,35 @@ function handleSubmit() {
         wordInput.value = '';
     }
 }
-
 submitBtn.addEventListener('click', handleSubmit);
 wordInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') handleSubmit();
+});
+
+function handleSendChat() {
+    const msg = chatInput.value.trim();
+    if (msg) {
+        socket.emit('sendChatMessage', msg);
+        chatInput.value = '';
+    }
+}
+
+sendChatBtn.addEventListener('click', handleSendChat);
+chatInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') handleSendChat();
+});
+
+socket.on('receiveChatMessage', (data) => {
+    const isMe = data.senderId === mySocketId;
+    
+    const bubble = document.createElement('div');
+    bubble.className = `chat-bubble ${isMe ? 'is-me' : ''}`;
+    
+    bubble.innerHTML = `
+        <div class="chat-sender">${isMe ? 'Bạn' : data.senderName}</div>
+        <div class="chat-text">${data.message}</div>
+    `;
+    
+    chatMessages.appendChild(bubble);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
 });

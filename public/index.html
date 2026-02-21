@@ -13,7 +13,10 @@
         </header>
 
         <section id="lobbyArea" class="lobby-area">
-            <h3>Tạo phòng mới</h3>
+            <h3>Tên hiển thị của bạn</h3>
+            <input type="text" id="playerNameInput" placeholder="VD: Tuấn Đỗ" maxlength="15" autocomplete="off">
+            
+            <div class="divider">TẠO PHÒNG MỚI</div>
             <div class="settings-box">
                 <label>Số người tối đa: <input type="number" id="setMaxPlayers" value="4" min="2" max="10"></label>
                 <label>Độ dài tối thiểu: <input type="number" id="setMinLength" value="3" min="1"></label>
@@ -25,7 +28,7 @@
             <div class="divider">HOẶC VÀO PHÒNG CÓ SẴN</div>
             
             <div class="join-box">
-                <input type="text" id="roomCodeInput" placeholder="Nhập mã (VD: 1234)">
+                <input type="text" id="roomCodeInput" placeholder="Nhập mã (VD: 1234)" autocomplete="off">
                 <button id="joinRoomBtn" class="secondary-btn">Vào phòng</button>
             </div>
             <p id="lobbyMessage" class="message"></p>
@@ -54,7 +57,7 @@
             </div>
             
             <div class="input-area">
-                <input type="text" id="wordInput" placeholder="Nhập từ của bạn..." autocomplete="off" disabled>
+                <input type="text" id="wordInput" placeholder="Nhập từ nối..." autocomplete="off" disabled>
                 <button id="submitBtn" disabled>Gửi</button>
             </div>
             <p id="gameMessage" class="message"></p>
@@ -63,6 +66,17 @@
                 <h3>Lịch sử từ vựng:</h3>
                 <div id="historyList" class="history-list"></div>
             </section>
+
+            <section class="chat-section">
+                <div id="chatMessages" class="chat-messages">
+                    <div class="chat-system">Chào mừng bạn đến với phòng chat!</div>
+                </div>
+                <div class="chat-input-container">
+                    <input type="text" id="chatInput" placeholder="Chat với phòng..." autocomplete="off">
+                    <button id="sendChatBtn">🚀</button>
+                </div>
+            </section>
+
         </section>
     </div>
 

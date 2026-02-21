@@ -415,3 +415,161 @@ button:disabled {
 .player-badge.is-me {
     border-bottom: 3px solid #b026ff;
 }
+
+/* --- CÁC STYLE CŨ GIỮ NGUYÊN --- */
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+body { background-color: #0d0d12; color: #ffffff; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px;}
+.game-container { width: 100%; max-width: 600px; background: #1a1a24; padding: 2rem; border-radius: 15px; box-shadow: 0 0 20px rgba(0, 255, 255, 0.1); border: 1px solid #2a2a35; }
+.neon-text-blue { color: #00ffff; text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff; }
+.neon-text-purple { color: #b026ff; text-shadow: 0 0 5px #b026ff, 0 0 10px #b026ff; }
+header h1 { text-align: center; margin-bottom: 1.5rem; font-size: 2rem; }
+.lobby-area { text-align: center; background: #232330; padding: 2rem; border-radius: 12px; }
+.settings-box { background: #1a1a24; padding: 15px; border-radius: 8px; border: 1px solid #444; margin-bottom: 15px; display: flex; flex-direction: column; gap: 10px; text-align: left; }
+.settings-box label { display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; }
+.settings-box input { width: 60px; background: #0d0d12; border: 1px solid #b026ff; color: #fff; text-align: center; border-radius: 4px; padding: 5px; }
+button { padding: 10px 20px; background: transparent; border: 2px solid #00ffff; color: #00ffff; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
+button:hover:not(:disabled) { background: #00ffff; color: #000; }
+button:disabled { border-color: #555; color: #555; cursor: not-allowed; }
+.primary-btn { border-color: #b026ff; color: #b026ff; }
+.primary-btn:hover { background: #b026ff; color: #fff; }
+.secondary-btn { border-color: #00ffff; color: #00ffff; }
+.secondary-btn:hover { background: #00ffff; color: #000; }
+.divider { color: #888; margin: 10px 0; font-size: 0.9rem; text-align: center; }
+.join-box { display: flex; gap: 10px; justify-content: center; }
+#roomCodeInput { width: 60%; padding: 10px; border-radius: 8px; border: 1px solid #555; background: #0d0d12; color: #fff; text-align: center; font-size: 1.2rem; letter-spacing: 2px;}
+.room-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+.leave-btn { background: transparent; border: 1px solid #ff4d4d; color: #ff4d4d; padding: 5px 10px; font-size: 0.9rem; }
+.leave-btn:hover { background: #ff4d4d; color: #fff; }
+.rule-box { text-align: center; font-size: 0.85rem; color: #888; margin-bottom: 10px; }
+.timer-container { text-align: center; margin-bottom: 15px; }
+.timer-box { font-size: 1.5rem; font-weight: 900; }
+.players-score-container { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 15px; }
+.player-badge { background: #0d0d12; padding: 8px 15px; border-radius: 8px; border: 1px solid #444; font-weight: bold; font-size: 0.9rem; color: #aaa; transition: all 0.3s; }
+.player-badge.active-turn { border-color: #00ffaa; color: #00ffaa; box-shadow: 0 0 10px rgba(0, 255, 170, 0.4); transform: scale(1.05); }
+.player-badge.is-me { border-bottom: 3px solid #b026ff; }
+.turn-indicator { text-align: center; padding: 10px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; font-size: 1.2rem; background: #333; transition: all 0.3s; }
+.my-turn { background: #004d40; color: #00ffaa; box-shadow: 0 0 10px rgba(0,255,170,0.3); }
+.opponent-turn { background: #4d0000; color: #ff4d4d; }
+.waiting-turn { background: #4a4a00; color: #ffff00; }
+.target-letter-container { text-align: center; margin-bottom: 2rem; }
+.huge-letter { font-size: 6rem; font-weight: 900; text-transform: uppercase; line-height: 1; margin-top: 10px; }
+.input-area { display: flex; gap: 10px; margin-bottom: 15px; }
+.input-area input { flex: 1; padding: 12px; background: #0d0d12; border: 2px solid #00ffff; color: #fff; font-size: 1.1rem; border-radius: 8px; outline: none; }
+.input-area input:focus { border-color: #b026ff; }
+.message { text-align: center; height: 20px; color: #ff4d4d; font-weight: bold; }
+.history-section { margin-top: 2rem; background: #232330; padding: 15px; border-radius: 8px; }
+.history-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.history-item { background: #0d0d12; border: 1px solid #444; padding: 5px 10px; border-radius: 15px; font-size: 0.9rem; }
+.hidden { display: none !important; }
+.shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+@keyframes shake { 10%, 90% { transform: translate3d(-2px, 0, 0); } 20%, 80% { transform: translate3d(4px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-6px, 0, 0); } 40%, 60% { transform: translate3d(6px, 0, 0); } }
+
+/* --- CSS DÀNH CHO KHUNG CHAT MỚI --- */
+.chat-section {
+    margin-top: 1.5rem;
+    background: #0d0d12;
+    border: 1px solid #444;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    height: 220px; /* Cố định chiều cao khung chat */
+    overflow: hidden;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Thanh cuộn cho khung chat */
+.chat-messages::-webkit-scrollbar { width: 6px; }
+.chat-messages::-webkit-scrollbar-thumb { background: #b026ff; border-radius: 4px; }
+
+.chat-system {
+    text-align: center;
+    color: #888;
+    font-size: 0.85rem;
+    font-style: italic;
+    margin-bottom: 10px;
+}
+
+.chat-bubble {
+    max-width: 80%;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    word-wrap: break-word;
+    background: #2a2a35;
+    color: #fff;
+    align-self: flex-start;
+}
+
+/* Khi mình là người gửi */
+.chat-bubble.is-me {
+    background: #3a1c54;
+    border: 1px solid #b026ff;
+    align-self: flex-end;
+}
+
+.chat-sender {
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: #00ffff;
+    margin-bottom: 4px;
+}
+
+.chat-bubble.is-me .chat-sender {
+    color: #b026ff;
+    text-align: right;
+}
+
+.chat-input-container {
+    display: flex;
+    border-top: 1px solid #444;
+    background: #1a1a24;
+}
+
+#chatInput {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 12px;
+    color: #fff;
+    outline: none;
+}
+
+#sendChatBtn {
+    border: none;
+    border-radius: 0;
+    border-left: 1px solid #444;
+    padding: 0 15px;
+    background: transparent;
+}
+#sendChatBtn:hover {
+    background: #b026ff;
+}
+
+/* --- CSS CHO Ô NHẬP TÊN --- */
+#playerNameInput {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 2px solid #b026ff;
+    background: #0d0d12;
+    color: #fff;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    transition: all 0.3s;
+}
+
+#playerNameInput:focus {
+    outline: none;
+    box-shadow: 0 0 10px rgba(176, 38, 255, 0.5);
+}

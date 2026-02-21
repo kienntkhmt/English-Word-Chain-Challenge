@@ -55,7 +55,6 @@ function handlePlayerLeave(socketId) {
             clearInterval(roomTimers[roomCode]); 
             delete roomTimers[roomCode];
         }
-        // Để đơn giản: Bất kỳ ai thoát cũng làm kết thúc game để đảm bảo tính liên tục của chuỗi
         io.to(roomCode).emit('playerLeft', 'Một người chơi đã rời phòng. Trò chơi kết thúc!');
         delete rooms[roomCode];
     }
@@ -64,19 +63,20 @@ function handlePlayerLeave(socketId) {
 
 io.on('connection', (socket) => {
     
-    // --- TẠO PHÒNG ---
-    socket.on('createRoom', (settings) => {
+    // --- TẠO PHÒNG (Nhận thêm playerName) ---
+    socket.on('createRoom', (data) => {
         const roomCode = generateRoomCode();
         rooms[roomCode] = {
             id: roomCode,
-            hostId: socket.id, // Lưu lại ID của chủ phòng
+            hostId: socket.id,
             settings: {
-                minLength: parseInt(settings.minLength) || 2,
-                maxLength: parseInt(settings.maxLength) || 15,
-                turnTime: parseInt(settings.turnTime) || 20,
-                maxPlayers: parseInt(settings.maxPlayers) || 4 // Số người tối đa
+                minLength: parseInt(data.settings.minLength) || 2,
+                maxLength: parseInt(data.settings.maxLength) || 15,
+                turnTime: parseInt(data.settings.turnTime) || 20,
+                maxPlayers: parseInt(data.settings.maxPlayers) || 4
             },
-            players: [{ id: socket.id, score: 0, name: "Player 1" }],
+            // Sử dụng tên người chơi gửi lên
+            players: [{ id: socket.id, score: 0, name: data.playerName }],
             historyWords: [],
             currentTargetLetter: '',
             turnIndex: 0,
@@ -91,28 +91,25 @@ io.on('connection', (socket) => {
         socket.emit('gameStateUpdate', rooms[roomCode]);
     });
 
-    // --- VÀO PHÒNG ---
-    socket.on('joinRoom', (roomCode) => {
-        const room = rooms[roomCode];
+    // --- VÀO PHÒNG (Nhận thêm playerName) ---
+    socket.on('joinRoom', (data) => {
+        const room = rooms[data.roomCode];
         if (!room) return socket.emit('errorMessage', 'Không tìm thấy phòng này!');
         if (room.status === 'playing') return socket.emit('errorMessage', 'Phòng này đang chơi rồi!');
         if (room.players.length >= room.settings.maxPlayers) return socket.emit('errorMessage', 'Phòng đã đầy!');
 
-        // Đánh số thứ tự người chơi (Player 2, Player 3...)
-        const playerNumber = room.players.length + 1;
-        room.players.push({ id: socket.id, score: 0, name: `Player ${playerNumber}` });
+        // Thêm người chơi với tên tự đặt
+        room.players.push({ id: socket.id, score: 0, name: data.playerName });
         
-        socket.join(roomCode);
-        playerRooms[socket.id] = roomCode;
+        socket.join(data.roomCode);
+        playerRooms[socket.id] = data.roomCode;
 
-        io.to(roomCode).emit('gameStateUpdate', room);
+        io.to(data.roomCode).emit('gameStateUpdate', room);
     });
 
-    // --- CHỦ PHÒNG BẮT ĐẦU GAME ---
     socket.on('startGame', () => {
         const roomCode = playerRooms[socket.id];
         const room = rooms[roomCode];
-        
         if (room && room.hostId === socket.id && room.players.length >= 2) {
             room.status = 'playing';
             io.to(roomCode).emit('gameStateUpdate', room);
@@ -120,11 +117,9 @@ io.on('connection', (socket) => {
         }
     });
 
-    // --- XỬ LÝ NHẬP TỪ ---
     socket.on('submitWord', (word) => {
         const roomCode = playerRooms[socket.id];
         const room = rooms[roomCode];
-
         if (!room || room.status !== 'playing') return;
 
         const currentPlayer = room.players[room.turnIndex];
@@ -144,8 +139,6 @@ io.on('connection', (socket) => {
         room.historyWords.push(word);
         room.currentTargetLetter = word.slice(-1);
         currentPlayer.score += 50;
-        
-        // Vòng lặp lượt: Player 1 -> 2 -> 3 -> 4 -> Quay lại 1
         room.turnIndex = (room.turnIndex + 1) % room.players.length;
 
         startTurnTimer(roomCode);
@@ -153,9 +146,23 @@ io.on('connection', (socket) => {
         io.to(roomCode).emit('wordAccepted', { word: word });
     });
 
+    socket.on('sendChatMessage', (message) => {
+        const roomCode = playerRooms[socket.id];
+        const room = rooms[roomCode];
+        if (!room) return;
+        const player = room.players.find(p => p.id === socket.id);
+        if (player) {
+            io.to(roomCode).emit('receiveChatMessage', {
+                senderId: socket.id,
+                senderName: player.name, // Lấy đúng tên custom để hiển thị trên chat
+                message: message
+            });
+        }
+    });
+
     socket.on('leaveRoom', () => { handlePlayerLeave(socket.id); socket.emit('leftRoomSuccess'); });
     socket.on('disconnect', () => { handlePlayerLeave(socket.id); });
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`🚀 Server chạy tại http://localhost:${PORT}`));
