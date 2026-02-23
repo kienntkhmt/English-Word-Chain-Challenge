@@ -55,7 +55,7 @@ function startTurnTimer(roomCode) {
             room.players.forEach(p => p.score = 0);
 
             // Bắn tín hiệu Game Over cho cả phòng
-            io.to(roomCode).emit('gameOver', `💥 THUA CUỘC! Thời gian đã hết.\nNgười chơi [${loser.name}] đã không tìm được từ nối.\nTrò chơi kết thúc!`);
+            io.to(roomCode).emit('gameOver', `💥 End gem.\n[${loser.name}] quá óc chó đã không tìm được từ nối.\nTrò chơi kết thúc!`);
             
             // Đồng bộ lại giao diện (sẽ tự động đưa mọi người về sảnh chờ trong phòng)
             io.to(roomCode).emit('gameStateUpdate', room);
