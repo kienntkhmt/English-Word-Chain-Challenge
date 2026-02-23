@@ -26,6 +26,7 @@ function generateRoomCode() {
     return Math.floor(1000 + Math.random() * 9000).toString();
 }
 
+// --- LOGIC MỚI: XỬ LÝ KHI HẾT GIỜ ---
 function startTurnTimer(roomCode) {
     const room = rooms[roomCode];
     if (!room || room.status !== 'playing') return;
@@ -40,10 +41,24 @@ function startTurnTimer(roomCode) {
 
         if (room.timeLeft <= 0) {
             clearInterval(roomTimers[roomCode]);
-            room.turnIndex = (room.turnIndex + 1) % room.players.length;
-            io.to(roomCode).emit('timeoutEvent', '⏳ Hết giờ! Chuyển lượt cho người tiếp theo.');
+            
+            // Tìm ra người vừa làm hết giờ
+            const loser = room.players[room.turnIndex];
+
+            // Đặt lại trạng thái phòng về "Đang chờ" để có thể chơi ván mới
+            room.status = 'waiting';
+            room.historyWords = [];
+            room.currentTargetLetter = '';
+            room.turnIndex = 0;
+            
+            // Đặt lại điểm số của tất cả người chơi về 0
+            room.players.forEach(p => p.score = 0);
+
+            // Bắn tín hiệu Game Over cho cả phòng
+            io.to(roomCode).emit('gameOver', `💥 THUA CUỘC! Thời gian đã hết.\nNgười chơi [${loser.name}] đã không tìm được từ nối.\nTrò chơi kết thúc!`);
+            
+            // Đồng bộ lại giao diện (sẽ tự động đưa mọi người về sảnh chờ trong phòng)
             io.to(roomCode).emit('gameStateUpdate', room);
-            startTurnTimer(roomCode); 
         }
     }, 1000);
 }
@@ -63,7 +78,6 @@ function handlePlayerLeave(socketId) {
 
 io.on('connection', (socket) => {
     
-    // --- TẠO PHÒNG (Nhận thêm playerName) ---
     socket.on('createRoom', (data) => {
         const roomCode = generateRoomCode();
         rooms[roomCode] = {
@@ -75,7 +89,6 @@ io.on('connection', (socket) => {
                 turnTime: parseInt(data.settings.turnTime) || 20,
                 maxPlayers: parseInt(data.settings.maxPlayers) || 4
             },
-            // Sử dụng tên người chơi gửi lên
             players: [{ id: socket.id, score: 0, name: data.playerName }],
             historyWords: [],
             currentTargetLetter: '',
@@ -91,14 +104,12 @@ io.on('connection', (socket) => {
         socket.emit('gameStateUpdate', rooms[roomCode]);
     });
 
-    // --- VÀO PHÒNG (Nhận thêm playerName) ---
     socket.on('joinRoom', (data) => {
         const room = rooms[data.roomCode];
         if (!room) return socket.emit('errorMessage', 'Không tìm thấy phòng này!');
         if (room.status === 'playing') return socket.emit('errorMessage', 'Phòng này đang chơi rồi!');
         if (room.players.length >= room.settings.maxPlayers) return socket.emit('errorMessage', 'Phòng đã đầy!');
 
-        // Thêm người chơi với tên tự đặt
         room.players.push({ id: socket.id, score: 0, name: data.playerName });
         
         socket.join(data.roomCode);
@@ -154,7 +165,7 @@ io.on('connection', (socket) => {
         if (player) {
             io.to(roomCode).emit('receiveChatMessage', {
                 senderId: socket.id,
-                senderName: player.name, // Lấy đúng tên custom để hiển thị trên chat
+                senderName: player.name,
                 message: message
             });
         }

@@ -1,9 +1,8 @@
 const socket = io();
 let mySocketId = '';
 
-// DOM Elements
 const lobbyArea = document.getElementById('lobbyArea');
-const playerNameInput = document.getElementById('playerNameInput'); // Nút nhập tên mới
+const playerNameInput = document.getElementById('playerNameInput');
 const createRoomBtn = document.getElementById('createRoomBtn');
 const joinRoomBtn = document.getElementById('joinRoomBtn');
 const roomCodeInput = document.getElementById('roomCodeInput');
@@ -33,7 +32,6 @@ const sendChatBtn = document.getElementById('sendChatBtn');
 
 socket.on('connect', () => { mySocketId = socket.id; });
 
-// --- TẠO PHÒNG ---
 createRoomBtn.addEventListener('click', () => {
     const playerName = playerNameInput.value.trim();
     if (!playerName) {
@@ -47,11 +45,9 @@ createRoomBtn.addEventListener('click', () => {
         turnTime: setTurnTime.value
     };
     
-    // Gửi cả settings và tên người chơi lên Server
     socket.emit('createRoom', { settings: settings, playerName: playerName });
 });
 
-// --- VÀO PHÒNG ---
 joinRoomBtn.addEventListener('click', () => {
     const playerName = playerNameInput.value.trim();
     if (!playerName) {
@@ -121,7 +117,7 @@ socket.on('gameStateUpdate', (room) => {
 
         if (room.hostId === mySocketId) {
             if (room.players.length >= 2) {
-                turnIndicator.textContent = "Đã đủ người, bạn có thể bắt đầu!";
+                turnIndicator.textContent = "Sẵn sàng ván mới! Chủ phòng hãy bấm Bắt đầu.";
                 turnIndicator.className = 'turn-indicator my-turn';
                 startGameBtn.classList.remove('hidden');
             } else {
@@ -179,10 +175,11 @@ socket.on('errorMessage', (msg) => {
     }
 });
 
-socket.on('timeoutEvent', (msg) => {
-    gameMessage.textContent = msg;
-    gameMessage.style.color = "#ff9900";
-    wordInput.value = ""; 
+// --- LẮNG NGHE SỰ KIỆN GAME OVER (MỚI) ---
+socket.on('gameOver', (msg) => {
+    alert(msg); // Bật popup báo người thua
+    wordInput.value = ""; // Dọn sạch ô nhập từ nếu người chơi gõ dở
+    gameMessage.textContent = ""; 
 });
 
 socket.on('playerLeft', (msg) => {
